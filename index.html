@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>家庭成长乐园</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* 防止移动端浏览器缩放 */
+        html, body {
+            touch-action: manipulation;
+            -webkit-text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
+        }
+
+        /* 确保内容不会超出视口 */
+        body {
+            width: 100vw;
+            max-width: 100vw;
+            overflow-x: hidden;
+        }
+
+        /* iPhone X 等刘海屏适配 */
+        @supports (padding: max(0px)) {
+            .safe-area-top {
+                padding-top: max(1rem, env(safe-area-inset-top));
+            }
+            .safe-area-bottom {
+                padding-bottom: max(1rem, env(safe-area-inset-bottom));
+            }
+        }
+
+        /* 改进移动端体验 */
+        @media (max-width: 640px) {
+            /* 防止橡皮筋效果 */
+            .overflow-scrolling {
+                -webkit-overflow-scrolling: touch;
+                overflow-scrolling: touch;
+            }
+
+            /* 优化触摸反馈 */
+            .touch-optimized {
+                -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+                -webkit-touch-callout: none;
+                -webkit-user-select: none;
+                user-select: none;
+            }
+
+            /* 改善按钮触摸体验 */
+            button, .btn-primary, .btn-secondary, [onclick] {
+                min-height: 48px;
+                min-width: 48px;
+                touch-action: manipulation;
+            }
+
+            /* 防止横向滚动 */
+            .no-horizontal-scroll {
+                overflow-x: hidden;
+                width: 100%;
+            }
+        }
+
+        /* 暗色模式支持 */
+        @media (prefers-color-scheme: dark) {
+            .bg-gradient-to-b {
+                background: linear-gradient(to bottom, #1a202c, #2d3748);
+            }
+        }
+
+        /* 减少动画以改善性能 */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="data:application/json,{%22name%22:%22家庭成长乐园%22,%22short_name%22:%22成长乐园%22,%22start_url%22:%22./%22,%22display%22:%22standalone%22,%22background_color%22:%22%23ffffff%22,%22theme_color%22:%22%234299e1%22,%22orientation%22:%22portrait%22}">
+
+    <!-- 移动端图标 -->
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3e%3ctext y='.9em' font-size='90'%3e🏠%3c/text%3e%3c/svg%3e">
+
+    <!-- 主题色 -->
+    <meta name="theme-color" content="#4299e1">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+</head>
+<body class="bg-gradient-to-b from-blue-50 to-green-50 min-h-screen overflow-x-hidden safe-area-top">
+    <!-- 顶部导航栏 -->
+    <header class="bg-white shadow-lg sticky top-0 z-50 safe-area-top">
+        <div class="container mx-auto px-3 py-2 sm:px-4 sm:py-3 flex items-center justify-between">
+            <div class="flex items-center space-x-2 sm:space-x-3">
+                <div class="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-blue-500 to-green-500 rounded-full flex items-center justify-center flex-shrink-0">
+                    <i class="fas fa-home text-white text-sm sm:text-lg"></i>
+                </div>
+                <h1 class="text-lg sm:text-xl font-bold text-gray-800 truncate">家庭成长乐园</h1>
+            </div>
+            <div class="flex items-center space-x-2 sm:space-x-4">
+                <div class="flex items-center space-x-1">
+                    <i class="fas fa-coins text-yellow-500 text-sm sm:text-base"></i>
+                    <span id="coins" class="text-sm sm:text-lg font-semibold text-gray-700">0</span>
+                </div>
+                <div class="flex items-center space-x-1">
+                    <i class="fas fa-heart text-red-500 text-sm sm:text-base"></i>
+                    <span id="hearts" class="text-sm sm:text-lg font-semibold text-gray-700">5</span>
+                </div>
+                <button id="menuBtn" class="p-2 rounded-lg hover:bg-gray-100 transition-colors">
+                    <i class="fas fa-bars text-gray-600 text-lg sm:text-xl"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主要内容区域 -->
+    <main class="flex-1 overflow-y-auto pb-20">
+        <!-- 顶部信息栏 -->
+        <div class="bg-gradient-to-r from-blue-500 to-purple-600 text-white p-4">
+            <div class="flex justify-between items-center mb-4">
+                <div class="flex items-center space-x-4">
+                    <div class="bg-yellow-400 text-yellow-800 px-3 py-1 rounded-full text-sm font-semibold">
+                        <i class="fas fa-coins mr-1"></i><span id="coins">0</span>
+                    </div>
+                    <div class="bg-red-400 text-red-800 px-3 py-1 rounded-full text-sm font-semibold">
+                        <i class="fas fa-heart mr-1"></i><span id="hearts">5</span>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <div class="text-sm">成长树等级</div>
+                    <div class="text-xl font-bold" id="treeLevel">1</div>
+                </div>
+            </div>
+            
+            <!-- 成长进度条 -->
+            <div class="bg-white bg-opacity-20 rounded-full h-4 mb-2">
+                <div id="growthProgress" class="bg-gradient-to-r from-green-400 to-yellow-400 h-4 rounded-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+            <div class="flex justify-between text-sm">
+                <span>成长进度</span>
+                <span id="growthText">0%</span>
+            </div>
+        </div>
+
+        <!-- 成长树区域 -->
+        <div class="p-6">
+            <div id="growthTree" class="text-center mb-6">
+                <div class="text-6xl mb-2 tree-emoji">🌱</div>
+                <p class="text-sm text-gray-600">Level 1 成长树</p>
+            </div>
+
+            <!-- 功能导航区域 -->
+            <div class="grid grid-cols-2 gap-4 mb-6">
+                <div class="bg-gradient-to-r from-blue-50 to-blue-100 p-4 rounded-xl cursor-pointer hover:scale-105 transition-transform" onclick="showSection('dailyTasks')">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="font-semibold text-gray-800">每日任务</h3>
+                            <p class="text-sm text-gray-600">完成任务获奖励</p>
+                        </div>
+                        <div class="text-2xl">📋</div>
+                    </div>
+                    <div class="mt-2 text-right">
+                        <span class="bg-blue-500 text-white text-xs px-2 py-1 rounded-full" id="taskCount">0</span>
+                    </div>
+                </div>
+
+                <div class="bg-gradient-to-r from-green-50 to-green-100 p-4 rounded-xl cursor-pointer hover:scale-105 transition-transform" onclick="showSection('character')">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="font-semibold text-gray-800">品德培养</h3>
+                            <p class="text-sm text-gray-600">学习优秀品德</p>
+                        </div>
+                        <div class="text-2xl">🌟</div>
+                    </div>
+                </div>
+
+                <div class="bg-gradient-to-r from-purple-50 to-purple-100 p-4 rounded-xl cursor-pointer hover:scale-105 transition-transform" onclick="showSection('study')">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="font-semibold text-gray-800">学习习惯</h3>
+                            <p class="text-sm text-gray-600">养成好习惯</p>
+                        </div>
+                        <div class="text-2xl">📚</div>
+                    </div>
+                </div>
+
+                <div class="bg-gradient-to-r from-yellow-50 to-yellow-100 p-4 rounded-xl cursor-pointer hover:scale-105 transition-transform" onclick="showSection('lifeSkills')">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="font-semibold text-gray-800">生活技能</h3>
+                            <p class="text-sm text-gray-600">掌握实用技能</p>
+                        </div>
+                        <div class="text-2xl">🏠</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 今日推荐 -->
+            <div class="bg-gradient-to-r from-pink-50 to-rose-50 p-4 rounded-xl mb-6">
+                <div class="flex items-center mb-3">
+                    <div class="text-2xl mr-2">🔥</div>
+                    <h3 class="font-semibold text-gray-800">今日推荐</h3>
+                </div>
+                <div class="bg-white rounded-lg p-3 shadow-sm">
+                    <div class="flex items-center">
+                        <div class="text-3xl mr-3">🎯</div>
+                        <div>
+                            <h4 class="font-semibold text-gray-800">专注力挑战</h4>
+                            <p class="text-sm text-gray-600">完成15分钟专注学习，获得额外奖励</p>
+                        </div>
+                    </div>
+                    <button onclick="game.startTimerGame()" class="mt-3 bg-gradient-to-r from-pink-500 to-rose-500 text-white px-4 py-2 rounded-lg text-sm w-full hover:opacity-90 transition-opacity">
+                        立即挑战
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 侧边菜单 -->
+    <div id="sideMenu" class="fixed inset-0 z-50 hidden">
+        <div class="absolute inset-0 bg-black bg-opacity-50" onclick="toggleMenu()"></div>
+        <div class="absolute right-0 top-0 h-full w-72 sm:w-80 bg-white shadow-2xl transform translate-x-full transition-transform duration-300" id="menuPanel">
+            <div class="p-4 sm:p-6 border-b safe-area-top">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-lg sm:text-xl font-bold text-gray-800">菜单</h2>
+                    <button onclick="toggleMenu()" class="p-2 hover:bg-gray-100 rounded-lg">
+                        <i class="fas fa-times text-gray-600 text-lg sm:text-xl"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="p-3 sm:p-4 space-y-2 safe-area-bottom">
+                <button onclick="showSection('profile')" class="w-full text-left p-3 sm:p-4 hover:bg-gray-50 rounded-lg flex items-center space-x-3">
+                    <i class="fas fa-user-circle text-blue-500 text-lg sm:text-xl"></i>
+                    <span class="text-gray-700 text-sm sm:text-base">个人资料</span>
+                </button>
+                <button onclick="showSection('achievements')" class="w-full text-left p-3 sm:p-4 hover:bg-gray-50 rounded-lg flex items-center space-x-3">
+                    <i class="fas fa-trophy text-yellow-500 text-lg sm:text-xl"></i>
+                    <span class="text-gray-700 text-sm sm:text-base">成就徽章</span>
+                </button>
+                <button onclick="showSection('family')" class="w-full text-left p-3 sm:p-4 hover:bg-gray-50 rounded-lg flex items-center space-x-3">
+                    <i class="fas fa-users text-green-500 text-lg sm:text-xl"></i>
+                    <span class="text-gray-700 text-sm sm:text-base">家庭成员</span>
+                </button>
+                <button onclick="showSection('settings')" class="w-full text-left p-3 sm:p-4 hover:bg-gray-50 rounded-lg flex items-center space-x-3">
+                    <i class="fas fa-cog text-gray-500 text-lg sm:text-xl"></i>
+                    <span class="text-gray-700 text-sm sm:text-base">设置</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 内容弹窗 -->
+    <div id="contentModal" class="fixed inset-0 z-50 hidden">
+        <div class="absolute inset-0 bg-black bg-opacity-50" onclick="closeModal()"></div>
+        <div class="absolute inset-2 sm:inset-4 bg-white rounded-2xl shadow-2xl overflow-hidden max-h-[90vh]">
+            <div class="p-4 sm:p-6 border-b flex items-center justify-between safe-area-top">
+                <h2 id="modalTitle" class="text-lg sm:text-xl font-bold text-gray-800 truncate flex-1"></h2>
+                <button onclick="closeModal()" class="p-2 hover:bg-gray-100 rounded-lg flex-shrink-0">
+                    <i class="fas fa-times text-gray-600 text-lg sm:text-xl"></i>
+                </button>
+            </div>
+            <div id="modalContent" class="p-4 sm:p-6 overflow-y-auto safe-area-bottom" style="max-height: calc(90vh - 80px);">
+                <!-- 动态内容 -->
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
